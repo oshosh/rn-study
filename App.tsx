@@ -1,66 +1,45 @@
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { Button, Text, View } from 'react-native';
+import { useState } from 'react';
+import Delivery from './src/pages/Delivery';
+import Orders from './src/pages/Orders';
+import Settings from './src/pages/Settings';
+import SignIn from './src/pages/SignIn';
+import SignUp from './src/pages/SignUp';
 
-type RootStackParamList = {
-  Home: undefined;
-  Details: { itemId: number; otherParam?: string };
+export type LoggedInParamList = {
+  Orders: undefined;
+  Settings: undefined;
+  Delivery: undefined;
+  Complete: { orderId: string };
 };
-type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
-type DetailsScreenProps = NativeStackScreenProps<RootStackParamList, 'Details'>;
 
-function HomeScreen({ navigation }: HomeScreenProps) {
-  const handleClick = () => {
-    navigation.navigate('Details', {
-      itemId: 86,
-      otherParam: 'anything you want here',
-    });
-  };
+export type RootStackParamList = {
+  SignIn: undefined;
+  SignUp: undefined;
+};
 
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-      <Button title='Go to Details' onPress={handleClick} />
-    </View>
-  );
-}
-
-function DetailsScreen({ route, navigation }: DetailsScreenProps) {
-  /* 2. Get the param */
-  const { itemId, otherParam } = route.params;
-
-  const handleClick = () => {
-    navigation.push('Details', {
-      itemId: Math.floor(Math.random() * 100),
-    });
-  };
-
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Details Screen</Text>
-      <Text>itemId: {JSON.stringify(itemId)}</Text>
-      <Text>otherParam: {JSON.stringify(otherParam)}</Text>
-
-      <Button title='Go to Details... again' onPress={handleClick} />
-      <Button title='Go to Home' onPress={() => navigation.navigate('Home')} />
-      <Button title='Go back' onPress={() => navigation.goBack()} />
-    </View>
-  );
-}
-
-const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function App() {
+  const [isLoggedIn, setLoggedIn] = useState(false);
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Home'>
-        <Stack.Screen name='Home' component={HomeScreen} options={{ title: '제목' }} />
-        <Stack.Screen name='Details' component={DetailsScreen} />
-        {/*<Stack.Screen name="Details">*/}
-        {/*  {props => <DetailsScreen {...props} />}*/}
-        {/*</Stack.Screen>*/}
-      </Stack.Navigator>
+      {isLoggedIn ? (
+        <Tab.Navigator>
+          <Tab.Screen name="Orders" component={Orders} options={{ title: '오더 목록' }} />
+          <Tab.Screen name="Delivery" component={Delivery} options={{ headerShown: false }} />
+          <Tab.Screen name="Settings" component={Settings} options={{ title: '내 정보' }} />
+        </Tab.Navigator>
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen name="SignIn" component={SignIn} options={{ title: '로그인' }} />
+          <Stack.Screen name="SignUp" component={SignUp} options={{ title: '회원가입' }} />
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   );
 }
