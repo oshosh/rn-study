@@ -1,9 +1,9 @@
 import React, { PropsWithChildren } from 'react';
-import { ImageStyle, Keyboard, TextStyle, TouchableWithoutFeedback, ViewStyle } from 'react-native';
+import { Keyboard, StyleProp, TouchableWithoutFeedback, ViewStyle } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 
 interface Props {
-  style?: ViewStyle | TextStyle | ImageStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 const DismissKeyboardView = ({ children, ...props }: PropsWithChildren<Props>) => (
