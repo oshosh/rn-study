@@ -70,6 +70,7 @@ function SignUp({ navigation }: SignUpScreenProps) {
       const response = await axios.post(`${Config.API_URL}/user`, { email, name, password });
       console.log(response);
       Alert.alert('알림', '회원가입 되었습니다.');
+      navigation.navigate('SignIn');
     } catch (error) {
       if (axios.isAxiosError<{ message: string }>(error) && error.response) {
         Alert.alert('알림', error.response.data.message);
@@ -77,7 +78,7 @@ function SignUp({ navigation }: SignUpScreenProps) {
     } finally {
       setLoading(false);
     }
-  }, [email, loading, name, password]);
+  }, [navigation, email, loading, name, password]);
 
   const canGoNext = email && name && password;
   return (

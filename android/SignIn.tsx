@@ -1,25 +1,25 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import axios from 'axios';
-import React, { useCallback, useRef, useState } from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
-  ActivityIndicator,
   Alert,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
+  ActivityIndicator,
 } from 'react-native';
-import Config from 'react-native-config';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { RootStackParamList } from '../../App';
 import DismissKeyboardView from '../components/DismissKeyboardView';
+import axios, {AxiosError} from 'axios';
+import Config from 'react-native-config';
+import {RootStackParamList} from '../../AppInner';
+import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
-import { useAppDispatch } from '../store';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
-function SignIn({ navigation }: SignInScreenProps) {
+function SignIn({navigation}: SignInScreenProps) {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -27,10 +27,10 @@ function SignIn({ navigation }: SignInScreenProps) {
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
 
-  const onChangeEmail = useCallback((text) => {
+  const onChangeEmail = useCallback(text => {
     setEmail(text.trim());
   }, []);
-  const onChangePassword = useCallback((text) => {
+  const onChangePassword = useCallback(text => {
     setPassword(text.trim());
   }, []);
   const onSubmit = useCallback(async () => {
@@ -56,12 +56,16 @@ function SignIn({ navigation }: SignInScreenProps) {
           name: response.data.data.name,
           email: response.data.data.email,
           accessToken: response.data.data.accessToken,
-        })
+        }),
       );
-      await EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
+      await EncryptedStorage.setItem(
+        'refreshToken',
+        response.data.data.refreshToken,
+      );
     } catch (error) {
-      if (axios.isAxiosError<{ message: string }>(error) && error.response) {
-        Alert.alert('알림', error.response.data.message);
+      const errorResponse = (error as AxiosError).response;
+      if (errorResponse) {
+        Alert.alert('알림', errorResponse.data.message);
       }
     } finally {
       setLoading(false);
@@ -119,8 +123,7 @@ function SignIn({ navigation }: SignInScreenProps) {
               : styles.loginButton
           }
           disabled={!canGoNext || loading}
-          onPress={onSubmit}
-        >
+          onPress={onSubmit}>
           {loading ? (
             <ActivityIndicator color="white" />
           ) : (
