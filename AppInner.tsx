@@ -14,6 +14,7 @@ import Orders from './src/pages/Orders';
 import Settings from './src/pages/Settings';
 import SignIn from './src/pages/SignIn';
 import SignUp from './src/pages/SignUp';
+import orderSlice from './src/slices/oreder';
 import userSlice from './src/slices/user';
 import { useAppDispatch } from './src/store';
 import { RootState } from './src/store/reducer';
@@ -65,6 +66,7 @@ function AppInner() {
   useEffect(() => {
     const callback = (data: any) => {
       console.log(data);
+      dispatch(orderSlice.actions.addOrder(data));
     };
     if (socket && isLoggedIn) {
       socket.emit('acceptOrder', 'hello');
@@ -75,7 +77,7 @@ function AppInner() {
         socket.off('order', callback);
       }
     };
-  }, [isLoggedIn, socket]);
+  }, [dispatch, isLoggedIn, socket]);
 
   useEffect(() => {
     if (!isLoggedIn) {
